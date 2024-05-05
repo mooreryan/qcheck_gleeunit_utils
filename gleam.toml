@@ -1,0 +1,16 @@
+name = "qcheck_gleeunit_utils"
+version = "0.1.0"
+
+description = "Utility functions for working with Gleam's gleeunit test framework"
+licences = ["Apache-2.0", "MIT"]
+repository = { type = "github", user = "mooreryan", repo = "gleam_qcheck" }
+links = [
+  { title = "gleeunit", href = "https://github.com/lpil/gleeunit" },
+  { title = "qcheck", href = "https://github.com/mooreryan/gleam_qcheck" },
+]
+
+[dependencies]
+gleam_stdlib = ">= 0.34.0 and < 2.0.0"
+gleeunit = ">= 1.0.0 and < 2.0.0"
+
+[dev-dependencies]
