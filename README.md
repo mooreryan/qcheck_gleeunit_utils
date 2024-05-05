@@ -1,3 +1,4 @@
+<!-- TOC --><a name="qcheck_gleeunit_utils"></a>
 # qcheck_gleeunit_utils
 
 [![Package Version](https://img.shields.io/hexpm/v/qcheck_gleeunit_utils)](https://hex.pm/packages/qcheck_gleeunit_utils)
@@ -6,19 +7,38 @@
 
 This package provides utility functions for working with Gleam's [gleeunit](https://github.com/lpil/gleeunit) test framework.
 
-While it may be more broadly useful, this library is mainly developed for internal use in the [qcheck](https://github.com/mooreryan/gleam_qcheck) library.  As such, no guarantees about API stability will be made until qcheck itself is more stable.  
+While it may be more broadly useful, this library is mainly developed for internal use in the [qcheck](https://github.com/mooreryan/gleam_qcheck) library.  As such, no guarantees about API stability will be made until qcheck itself is more stable.
 
+## Contents
+
+<!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
+
+- [qcheck_gleeunit_utils](#qcheck_gleeunit_utils)
+   * [Compilation target](#compilation-target)
+   * [Usage](#usage)
+      + [Run all tests in parallel](#run-all-tests-in-parallel)
+      + [Run tests with long timeouts](#run-tests-with-long-timeouts)
+      + [Run parallel test groups](#run-parallel-test-groups)
+         - [Gotchas](#gotchas)
+      + [Run in-order tests in a parallel context](#run-in-order-tests-in-a-parallel-context)
+   * [License](#license)
+
+<!-- TOC end -->
+
+<!-- TOC --><a name="compilation-target"></a>
 ## Compilation target
 
 The functions provided in this package only work properly on the Erlang target.  They will not manage your tests properly on the JavaScript target.
 
+<!-- TOC --><a name="usage"></a>
 ## Usage
 
 The following sections show some common use cases.  More info can be found in the docs.
 
 (Click the tiny arrows to expand the sections containing example code.)
 
-### Run all tests in parallel.
+<!-- TOC --><a name="run-all-tests-in-parallel"></a>
+### Run all tests in parallel
 
 If you want to keep things as simple as possible and simply run all your tests in parallel, you may replace the call to `gleeunit.main` with `run.run_gleeunit`.
 
@@ -72,7 +92,8 @@ fn do_work() {
 
 Be aware that any individual test that takes longer than 5 seconds (the default EUnit timeout), will cause the whole test suite to come crashing down.
 
-### Tests with long timeouts
+<!-- TOC --><a name="run-tests-with-long-timeouts"></a>
+### Run tests with long timeouts
 
 Here is an example of a test that will timeout (...at least, it will timeout on my laptop).
 
@@ -188,7 +209,8 @@ Now, run that with `gleam test` and you will get a passing test. (On my computer
 
 *Note that this example can also be used with the `run.run_gleeunit` as opposed to the `gleeunit.main` if you want to parallelize all the tests.
 
-### Parallel test groups
+<!-- TOC --><a name="run-parallel-test-groups"></a>
+### Run parallel test groups
 
 Sometimes, you may want only certain tests to be run in parallel, perhaps because you have some tests that interact with some external state or involve some other tricky setup or teardown that may interact poorly with other tests running in parallel.
 
@@ -264,6 +286,7 @@ fn do_work(i) {
 
 </details>
 
+<!-- TOC --><a name="gotchas"></a>
 #### Gotchas
 
 There is a tricky gotcha that you need to be aware of with test groups.  It occurs when you give different timeouts for functions in a test group.
@@ -335,7 +358,8 @@ If you change the timeout to `100` seconds (or really any long enough value), an
 
 To summarize, be careful with test groups when one or more of the tests may timeout--it will silently crash the whole test group, swallowing any failures (or passes) for some (or all) of the tests.
 
-### In order tests in a parallel context
+<!-- TOC --><a name="run-in-order-tests-in-a-parallel-context"></a>
+### Run in-order tests in a parallel context
 
 If what you really want is *all* tests to be run in parallel, it can be a real drag to specify all your tests in parallel test groups.  So it is easy enough to use the `run.run_gleeunit` parallel helper.  However, what if you need some of the tests to be run in order?
 
@@ -448,6 +472,7 @@ fn do_work(i) {
 
 If you run that with `gleam test`, you will see the first 6 test complete more or less all at once, then the following six tests complete one-by-one.
 
+<!-- TOC --><a name="license"></a>
 ## License
 
 [![license MIT or Apache
