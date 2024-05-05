@@ -3,7 +3,7 @@ version = "0.1.0"
 
 description = "Utility functions for working with Gleam's gleeunit test framework"
 licences = ["Apache-2.0", "MIT"]
-repository = { type = "github", user = "mooreryan", repo = "gleam_qcheck" }
+repository = { type = "github", user = "mooreryan", repo = "qcheck_gleeunit_utils" }
 links = [
   { title = "gleeunit", href = "https://github.com/lpil/gleeunit" },
   { title = "qcheck", href = "https://github.com/mooreryan/gleam_qcheck" },
