@@ -41,9 +41,9 @@ import gleam/dynamic.{type Dynamic}
 @target(erlang)
 import gleam/list
 @target(erlang)
-import gleam/result
-@target(erlang)
 import gleam/string
+@target(erlang)
+import gleam/dynamic/decode
 
 @target(erlang)
 fn do_run_in_parallel() -> Nil {
@@ -55,8 +55,7 @@ fn do_run_in_parallel() -> Nil {
     |> list.map(dangerously_convert_string_to_atom(_, Utf8))
     |> Inparallel
     |> run_eunit(options)
-    |> dynamic.result(dynamic.dynamic, dynamic.dynamic)
-    |> result.unwrap(Error(dynamic.from(Nil)))
+    |> decode.run(decode.dynamic)
 
   let code = case result {
     Ok(_) -> 0
