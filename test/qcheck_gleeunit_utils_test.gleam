@@ -11,37 +11,37 @@ const test_iterations: Int = 1
 
 pub fn use_syntax__test_() {
   use <- test_spec.make
-  do_work(test_iterations)
+  let _ = do_work(test_iterations)
   should.equal(1, 1)
 }
 
 pub fn in_parallel_1__test() {
-  do_work(test_iterations)
+  let _ = do_work(test_iterations)
   should.equal(1, 1)
 }
 
 pub fn in_parallel_2__test() {
-  do_work(test_iterations)
+  let _ = do_work(test_iterations)
   should.equal(1, 1)
 }
 
 pub fn in_parallel_3__test() {
-  do_work(test_iterations)
+  let _ = do_work(test_iterations)
   should.equal(1, 1)
 }
 
 fn in_order_1() {
-  do_work(test_iterations)
+  let _ = do_work(test_iterations)
   should.equal(1, 1)
 }
 
 fn in_order_2() {
-  do_work(test_iterations)
+  let _ = do_work(test_iterations)
   should.equal(1, 1)
 }
 
 fn in_order_3() {
-  do_work(test_iterations)
+  let _ = do_work(test_iterations)
   should.equal(1, 1)
 }
 

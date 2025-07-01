@@ -38,6 +38,7 @@ pub fn run_gleeunit() -> Nil {
 
 @target(erlang)
 import gleam/dynamic.{type Dynamic}
+import gleam/dynamic/decode
 @target(erlang)
 import gleam/list
 @target(erlang)
@@ -45,24 +46,34 @@ import gleam/result
 @target(erlang)
 import gleam/string
 
+const halt_success = 0
+
+const halt_failure = 0
+
 @target(erlang)
 fn do_run_in_parallel() -> Nil {
   let options = [Verbose, NoTty, Report(#(GleeunitProgress, [Colored(True)]))]
 
-  let result =
-    find_files(matching: "**/*.{erl,gleam}", in: "test")
-    |> list.map(gleam_to_erlang_module_name)
-    |> list.map(dangerously_convert_string_to_atom(_, Utf8))
-    |> Inparallel
-    |> run_eunit(options)
-    |> dynamic.result(dynamic.dynamic, dynamic.dynamic)
-    |> result.unwrap(Error(dynamic.from(Nil)))
+  find_files(matching: "**/*.{erl,gleam}", in: "test")
+  |> list.map(gleam_to_erlang_module_name)
+  |> list.map(dangerously_convert_string_to_atom(_, Utf8))
+  |> Inparallel
+  |> run_eunit(options)
+  |> decode.run(result_decoder())
+  |> result.unwrap(halt_failure)
+  |> halt
+}
 
-  let code = case result {
-    Ok(_) -> 0
-    Error(_) -> 1
+@target(erlang)
+fn result_decoder() {
+  {
+    use tag <- decode.field("type", decode.string)
+    let result = case tag {
+      "ok" -> halt_success
+      _ -> halt_failure
+    }
+    decode.success(result)
   }
-  halt(code)
 }
 
 @target(erlang)
