@@ -4,3 +4,5 @@
 erl_crash.dump
 
 _*
+.tool-versions
+.zed
