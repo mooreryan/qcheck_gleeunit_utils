@@ -1,43 +1,29 @@
-//// This module provides an alternative to the 
-//// [gleeunit.main](https://hexdocs.pm/gleeunit/gleeunit.html#main) function 
-//// that will run tests in parallel when targeting Erlang.  When targeting 
+//// This module provides an alternative to the
+//// [gleeunit.main](https://hexdocs.pm/gleeunit/gleeunit.html#main) function
+//// that will run tests in parallel when targeting Erlang.  When targeting
 //// JavaScript, it will use Gleeunit's default runner.
-//// 
-//// 
+////
+////
 
-// Note: This module is a modified version of the `gleeunit` module from the
-// `gleeunit` package.  See bottom of module for original copyright notice.
+// Based on gleeunit commit 28993019b465e0d5872d67a890b3ec5ba7e42283
 
-@target(javascript)
-import gleeunit
+// Original copyright notice:
+//
+//
+// Copyright 2021, Louis Pilfold <louis@lpil.uk>.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
-@target(javascript)
-pub fn run_gleeunit() -> Nil {
-  gleeunit.main()
-}
-
-@target(erlang)
-/// Find and run all test functions for the current project using Erlang's EUnit
-/// test framework.
-///
-/// Any Erlang or Gleam function in the `test` directory with a name ending in
-/// `_test` is considered a test function and will be run.
-///
-/// When targeting Erlang, any Erlang or Gleam function in the `test` directory 
-/// with a name ending in `_test_` is considered a test generating function that 
-/// should return a representation of a set of tests to be run.  (See 
-/// `test_spec.make`, for more information.)
-///
-/// - If running on Erlang, tests will be run in parallel.
-/// - If running on JavaScript, tests will be run with Gleeunit's default runner.
-///
-/// 
-pub fn run_gleeunit() -> Nil {
-  do_run_in_parallel()
-}
-
-@target(erlang)
-import gleam/dynamic.{type Dynamic}
 @target(erlang)
 import gleam/list
 @target(erlang)
@@ -45,8 +31,28 @@ import gleam/result
 @target(erlang)
 import gleam/string
 
+/// Find and run all test functions for the current project using Erlang's EUnit
+/// test framework, or a custom JavaScript test runner.
+///
+/// Any Erlang or Gleam function in the `test` directory with a name ending in
+/// `_test` is considered a test function and will be run.
+///
+/// A test that panics is considered a failure.
+///
+pub fn run_gleeunit() -> Nil {
+  do_run_gleeunit()
+}
+
+@target(javascript)
+import gleeunit
+
+@target(javascript)
+fn do_run_gleeunit() -> Nil {
+  gleeunit.main()
+}
+
 @target(erlang)
-fn do_run_in_parallel() -> Nil {
+fn do_run_gleeunit() -> Nil {
   let options = [Verbose, NoTty, Report(#(GleeunitProgress, [Colored(True)]))]
 
   let result =
@@ -55,8 +61,6 @@ fn do_run_in_parallel() -> Nil {
     |> list.map(dangerously_convert_string_to_atom(_, Utf8))
     |> Inparallel
     |> run_eunit(options)
-    |> dynamic.result(dynamic.dynamic, dynamic.dynamic)
-    |> result.unwrap(Error(dynamic.from(Nil)))
 
   let code = case result {
     Ok(_) -> 0
@@ -71,10 +75,19 @@ fn halt(a: Int) -> Nil
 
 @target(erlang)
 fn gleam_to_erlang_module_name(path: String) -> String {
-  path
-  |> string.replace(".gleam", "")
-  |> string.replace(".erl", "")
-  |> string.replace("/", "@")
+  case string.ends_with(path, ".gleam") {
+    True ->
+      path
+      |> string.replace(".gleam", "")
+      |> string.replace("/", "@")
+
+    False ->
+      path
+      |> string.split("/")
+      |> list.last
+      |> result.unwrap(path)
+      |> string.replace(".erl", "")
+  }
 }
 
 @target(erlang)
@@ -112,28 +125,9 @@ type EunitOption {
 
 @target(erlang)
 type TestRepr {
-  // Do not change this to PascalCase. It must be like this for the FFI.
   Inparallel(List(Atom))
 }
 
 @target(erlang)
-@external(erlang, "eunit", "test")
-fn run_eunit(a: TestRepr, b: List(EunitOption)) -> Dynamic
-//
-//
-// Original copyright notice:
-//
-//
-// Copyright 2021, Louis Pilfold <louis@lpil.uk>.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+@external(erlang, "qcheck_gleeunit_utils_ffi", "run_eunit")
+fn run_eunit(a: TestRepr, b: List(EunitOption)) -> Result(Nil, a)

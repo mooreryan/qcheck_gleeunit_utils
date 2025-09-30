@@ -1,5 +1,5 @@
 name = "qcheck_gleeunit_utils"
-version = "0.1.0"
+version = "1.0.0"
 
 description = "Utility functions for working with Gleam's gleeunit test framework"
 licences = ["Apache-2.0", "MIT"]

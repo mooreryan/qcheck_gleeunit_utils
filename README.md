@@ -4,10 +4,9 @@
 [![Package Version](https://img.shields.io/hexpm/v/qcheck_gleeunit_utils)](https://hex.pm/packages/qcheck_gleeunit_utils)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/qcheck_gleeunit_utils/)
 
-
 This package provides utility functions for working with Gleam's [gleeunit](https://github.com/lpil/gleeunit) test framework.
 
-While it may be more broadly useful, this library is mainly developed for internal use in the [qcheck](https://github.com/mooreryan/gleam_qcheck) library.  As such, no guarantees about API stability will be made until qcheck itself is more stable.
+This library was originally developed for internal use in the [qcheck](https://github.com/mooreryan/gleam_qcheck) library, hence the name. However, you may find it useful as well to help run your tests in parallel and to manage timeouts.
 
 ## Contents
 
@@ -352,7 +351,7 @@ fn do_work(i) {
 
 </details>
 
-If you run that with `gleam test`, while you should see three test failures, you will only see the first test failure.  I suspect this is because the timeout error triggered by the second test silently brings down the whole test group.  
+If you run that with `gleam test`, while you should see three test failures, you will only see the first test failure.  I suspect this is because the timeout error triggered by the second test silently brings down the whole test group.
 
 If you change the timeout to `100` seconds (or really any long enough value), and rerun `gleam test`, you will see all three tests failing as expected.
 
